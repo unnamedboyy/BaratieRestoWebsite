@@ -160,7 +160,7 @@
 </div>
 
 <div class="story">
-    <img src="{{ asset('images/head(1).jpg') }}">
+    <img src="{{ asset('public/images/head(1).jpg') }}">
 </div>
 
 <!-- Achievements Section -->
@@ -174,7 +174,7 @@
         ] as $achievement)
             <div class="col-4 d-flex justify-content-center mb-4">
                 <div class="achievement-card">
-                    <img src="{{ asset('images/' . $achievement['image']) }}" alt="Achievement">
+                    <img src="{{ asset('public/images/' . $achievement['image']) }}" alt="Achievement">
                     <h2 style="font-size: 1.2rem;">{{ $achievement['title'] }}</h2>
                 </div>
             </div>
@@ -197,7 +197,7 @@
                         <div class="flip-card">
                             <div class="flip-card-inner">
                                 <div class="flip-card-front">
-                                    <img src="{{ asset('images/' . $chef['image']) }}" class="chef-image" alt="{{ $chef['name'] }}">
+                                    <img src="{{ asset('public/images/' . $chef['image']) }}" class="chef-image" alt="{{ $chef['name'] }}">
                                 </div>
                                 <div class="flip-card-back">
                                     <div>
@@ -272,4 +272,4 @@
     });
 </script>
 
-@endsection 
+@endsection

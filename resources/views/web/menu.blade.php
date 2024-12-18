@@ -123,7 +123,7 @@
             ['Spring Rolls', 42000, 'spring-rolls.jpeg', 'Crispy rolls filled with vegetables and shrimp.']
         ] as $item)
         <div class="menu-item">
-            <img src="{{ asset('images/' . $item[2]) }}" alt="{{ $item[0] }}" class="menu-image">
+            <img src="{{ asset('public/images/' . $item[2]) }}" alt="{{ $item[0] }}" class="menu-image">
             <div class="menu-details">
                 <strong>{{ $item[0] }}</strong>
                 <p>{{ $item[3] }}</p>
@@ -144,7 +144,7 @@
             ['Seafood Platter', 320000, 'seafood.jpeg', 'An assortment of grilled seafood with dipping sauces.']
         ] as $item)
         <div class="menu-item">
-            <img src="{{ asset('images/' . $item[2]) }}" alt="{{ $item[0] }}" class="menu-image">
+            <img src="{{ asset('public/images/' . $item[2]) }}" alt="{{ $item[0] }}" class="menu-image">
             <div class="menu-details">
                 <strong>{{ $item[0] }}</strong>
                 <p>{{ $item[3] }}</p>
@@ -165,7 +165,7 @@
             ['Creme Brulee', 80000, 'creme.jpeg', 'Creamy custard with a caramelized sugar top.']
         ] as $item)
         <div class="menu-item">
-            <img src="{{ asset('images/' . $item[2]) }}" alt="{{ $item[0] }}" class="menu-image">
+            <img src="{{ asset('public/images/' . $item[2]) }}" alt="{{ $item[0] }}" class="menu-image">
             <div class="menu-details">
                 <strong>{{ $item[0] }}</strong>
                 <p>{{ $item[3] }}</p>
@@ -186,7 +186,7 @@
             ['Smoothie', 57000, 'smoothie.jpeg', 'Blended fruits and yogurt for a healthy drink.']
         ] as $item)
         <div class="menu-item">
-            <img src="{{ asset('images/' . $item[2]) }}" alt="{{ $item[0] }}" class="menu-image">
+            <img src="{{ asset('public/images/' . $item[2]) }}" alt="{{ $item[0] }}" class="menu-image">
             <div class="menu-details">
                 <strong>{{ $item[0] }}</strong>
                 <p>{{ $item[3] }}</p>

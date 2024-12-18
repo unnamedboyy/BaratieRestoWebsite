@@ -30,7 +30,8 @@
         padding: 0;
     }
 
-    h1, h5 {
+    h1,
+    h5 {
         color: #d4af37;
     }
 
@@ -46,7 +47,8 @@
         color: #1a1a1a;
     }
 
-    th, td {
+    th,
+    td {
         text-align: center;
         vertical-align: middle;
     }
@@ -105,45 +107,36 @@
 </style>
 
 <div class="container text-left my-5" data-aos="fade-up">
-    <h1 class="mb-3">Kelola review</h1>
+    <h1 class="mb-3 ml-3">Kelola review</h1>
 
-    <div class="text-start mb-3">
+    <!-- <div class="text-start mb-3">
         <a href="{{ route('review.create') }}" class="btn btn-outline-light">Tambah review</a>
-    </div>
+    </div> -->
 
     <!-- review Table -->
     <div class="table-responsive" data-aos="fade-up">
 
-    <!-- Reviews List -->
-    <div class="reviews-container">
-        @forelse ($review as $review)
-        <div class="card-review" data-aos="fade-up">
-            <div class="review-header">
-                <img src="{{ asset($review->user->profile_image ?? 'images/default.png') }}" class="profile-img" alt="Profile Picture">
-                <div>
-                    <h5 class="mb-1">{{ $review->id_user }}</h5>
-                    <small class="text-muted">{{ $review->created_at->format('d M Y') }}</small>
+        <!-- Reviews List -->
+        <div class="reviews-container ml-3">
+            @forelse ($reviews as $review)
+                <div class="card-review" data-aos="fade-up">
+                    <p><b>Id User : </b> {{ $review->id_user }}</p>
+                    <p><b>Id Menu : </b> {{ $review->id_menu }}</p>
+                    <div class="star-rating">
+                        @for ($i = 1; $i <= $review->rating; $i++)
+                            <label>&#9733;</label>
+                        @endfor
+                    </div>
+                    <p>{{ $review->note }}</p>
+                    <p>_______________________________________________________________</p>
                 </div>
+            @empty
+            @endforelse
+            <div class="pagination-container">
+                {{ $reviews->links('pagination::bootstrap-5') }}
             </div>
-            <hr>
-            <p><b>Reviewed Food:</b> {{ $review->food }}</p>
-            <div class="star-rating">
-                @for ($i = 1; $i <= $review->rating; $i++)
-                    <label>&#9733;</label>
-                @endfor
-            </div>
-            <p>{{ $review->review }}</p>
         </div>
-        @empty
-        <div class="text-center">
-            <p>No reviews available yet. Be the first to leave a review!</p>
-        </div>
-        @endforelse
-    </div>
 
-        <div class="pagination-container">
-            {{ $review->links() }}
-        </div>
     </div>
 </div>
 

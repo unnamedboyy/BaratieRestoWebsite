@@ -3,69 +3,126 @@
 namespace App\Http\Controllers;
 
 use App\Models\Review;
+use App\Models\Menu;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ReviewController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
-        $review = Review::paginate(15);  // Mengambil semua data reservasi beserta relasi meja dan user
-        return view('admin.review.index', compact('review'));
+        $reviews = Review::latest()->paginate(5);
+        return view('admin.review.index', compact('reviews'));
+    }
+    /**
+     * Menampilkan form review dan daftar review.
+     */
+    public function create(Request $request)
+    {
+        // Ambil semua kategori unik dari tabel menu
+        $categories = Menu::select('kategori')->distinct()->pluck('kategori');
+
+        // Filter menu berdasarkan kategori yang dipilih
+        $selectedCategory = $request->get('kategori');
+        $menus = Menu::when($selectedCategory, function ($query, $selectedCategory) {
+                        return $query->where('kategori', $selectedCategory);
+                    })->select('id', 'nama_menu', 'harga')->get();
+
+        // Ambil semua review dengan relasi user dan menu
+        $reviews = Review::with(['user', 'menu:id,nama_menu,harga'])
+                        ->latest()
+                        ->paginate(10);
+
+        return view('web.review', compact('reviews', 'menus', 'categories', 'selectedCategory'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Menyimpan review baru ke database.
      */
     public function store(Request $request)
     {
+        // Validasi input
         $validatedData = $request->validate([
-            'note' => 'nullable|string',
+            'note' => 'nullable|string|max:255',
             'rating' => 'required|integer|min:1|max:5',
             'id_menu' => 'required|exists:menus,id',
-            'id_user' => 'required|exists:users,id',
         ]);
 
-        $review = Review::create($validatedData); // Membuat review baru
+        // Simpan review ke database
+        Review::create([
+            'id_user' => Auth::id(),
+            'id_menu' => $validatedData['id_menu'],
+            'rating' => $validatedData['rating'],
+            'note' => $validatedData['note'],
+        ]);
 
-        return response()->json(['message' => 'Review created successfully', 'review' => $review], 201);
+        return redirect()->route('web.review')->with('success', 'Review berhasil ditambahkan!');
     }
 
     /**
-     * Display the specified resource.
+     * Menampilkan satu review berdasarkan ID.
      */
-    public function show(Review $review)
+    public function show($id)
     {
-        $review->load(['menu', 'user']); // Memuat relasi menu dan user
-        return response()->json($review); // Mengembalikan data review berdasarkan ID
+        $review = Review::with(['user', 'menu:id,nama_menu,harga'])->findOrFail($id);
+        return view('web.review_show', compact('review'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Menampilkan form untuk mengedit review.
      */
-    public function update(Request $request, Review $review)
+    public function edit($id)
     {
+        $review = Review::findOrFail($id);
+
+        if ($review->id_user !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $menus = Menu::select('id', 'nama_menu', 'harga')->get();
+        return view('web.review_edit', compact('review', 'menus'));
+    }
+
+    /**
+     * Memperbarui data review yang ada.
+     */
+    public function update(Request $request, $id)
+    {
+        $review = Review::findOrFail($id);
+
+        if ($review->id_user !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $validatedData = $request->validate([
-            'note' => 'nullable|string',
-            'rating' => 'sometimes|required|integer|min:1|max:5',
-            'id_menu' => 'sometimes|required|exists:menus,id',
-            'id_user' => 'sometimes|required|exists:users,id',
+            'note' => 'nullable|string|max:255',
+            'rating' => 'required|integer|min:1|max:5',
+            'id_menu' => 'required|exists:menus,id',
         ]);
 
-        $review->update($validatedData); // Memperbarui data review
+        $review->update([
+            'id_menu' => $validatedData['id_menu'],
+            'rating' => $validatedData['rating'],
+            'note' => $validatedData['note'],
+        ]);
 
-        return response()->json(['message' => 'Review updated successfully', 'review' => $review]);
+        return redirect()->route('web.review')->with('success', 'Review berhasil diperbarui!');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Menghapus review dari database.
      */
-    public function destroy(Review $review)
+    public function destroy($id)
     {
-        $review->delete(); // Menghapus review
+        $review = Review::findOrFail($id);
 
-        return response()->json(['message' => 'Review deleted successfully']);
+        if ($review->id_user !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $review->delete();
+
+        return redirect()->route('web.review')->with('success', 'Review berhasil dihapus!');
     }
 }

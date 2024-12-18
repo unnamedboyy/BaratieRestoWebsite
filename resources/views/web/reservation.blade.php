@@ -54,17 +54,15 @@
         box-shadow: none;
     }
 
-    .is-invalid {
-        border-color: #dc3545 !important;
+    h1 {
+        color: #d4af37;
+        text-align: center;
+        margin-bottom: 20px;
     }
 
-    .invalid-feedback {
-        display: none;
-        color: #dc3545;
-    }
-
-    .show-feedback .invalid-feedback {
-        display: block;
+    p {
+        text-align: center;
+        margin-bottom: 30px;
     }
 
     .btn-outline-light {
@@ -81,17 +79,6 @@
         background-color: #d4af37;
         color: black;
     }
-
-    h1 {
-        color: #d4af37;
-        text-align: center;
-        margin-bottom: 20px;
-    }
-
-    p {
-        text-align: center;
-        margin-bottom: 30px;
-    }
 </style>
 
 <div class="container">
@@ -99,100 +86,99 @@
         <h1>Reservation Form</h1>
         <p>Send us a message and we'll get back to you as soon as possible. Looking forward to hearing from you.</p>
 
-        <form id="reservationForm" novalidate>
+        <!-- Pesan Sukses atau Error -->
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        <!-- Menampilkan pesan error dari validasi -->
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+
+
+       <!-- Form Reservasi -->
+        <form action="{{ route('reservasi.store') }}" method="POST" novalidate>
+            @csrf
+
+            <!-- Nama User -->
             <div class="mb-4">
-                <label for="nameInput" class="form-label">Name</label>
-                <input type="text" class="form-control" id="nameInput" placeholder="Name">
-                <div class="invalid-feedback">Please enter your name.</div>
+                <label for="user" class="form-label">Name</label>
+                <input type="text" class="form-control" id="user" name="name" 
+                    value="{{ Auth::check() ? Auth::user()->nama_pelanggan : '' }}" 
+                    placeholder="Name" readonly>
             </div>
 
+            <!-- Input Hidden untuk id_user -->
+            <input type="hidden" name="id_user" value="{{ Auth::id() }}">
+
+            <!-- Nomor Telepon -->
             <div class="mb-4">
                 <label for="phoneInput" class="form-label">Phone</label>
-                <input type="text" class="form-control" id="phoneInput" placeholder="Number Phone">
-                <div class="invalid-feedback">Please enter a valid phone number.</div>
+                <input type="text" class="form-control" id="phoneInput" name="phone" 
+                    value="{{ Auth::check() ? Auth::user()->telepon : '' }}" 
+                    placeholder="Phone Number" readonly>
             </div>
 
-            <div class="mb-4">
-                <label for="peopleInput" class="form-label">People</label>
-                <input type="number" class="form-control" id="peopleInput" min="1" max="10" placeholder="1-10">
-                <div class="invalid-feedback">Please enter the number of people (1-10).</div>
-            </div>
-
+            <!-- Pilih Jenis Meja -->
             <div class="mb-4">
                 <label for="tableSelect" class="form-label">Table</label>
-                <select class="form-select" id="tableSelect">
+                <select class="form-select" id="tableSelect" name="jenis" required>
                     <option selected value="">Select Table</option>
-                    <option value="1">Regular (2)</option>
-                    <option value="2">VIP (4)</option>
-                    <option value="3">VVIP (8)</option>
+                    <option value="Reguler">Reguler (2)</option>
+                    <option value="VIP">VIP (4)</option>
+                    <option value="VVIP">VVIP (8)</option>
                 </select>
                 <div class="invalid-feedback">Please select a table type.</div>
             </div>
 
-            <div class="row mb-4">
-                <div class="col">
-                    <label for="dateInput" class="form-label">Date</label>
-                    <input type="date" class="form-control" id="dateInput">
-                    <div class="invalid-feedback">Please select a date</div>
-                </div>
-                <div class="col">
-                    <label for="timeInInput" class="form-label">Time In</label>
-                    <input type="time" class="form-control" id="timeInInput">
-                    <div class="invalid-feedback">Please enter the time in</div>
-                </div>
-                <div class="col">
-                    <label for="timeOutInput" class="form-label">Time Out</label>
-                    <input type="time" class="form-control" id="timeOutInput">
-                    <div class="invalid-feedback">Please enter the time out</div>
-                </div>
+            <!-- Tanggal Reservasi -->
+            <div class="mb-4">
+                <label for="dateInput" class="form-label">Date</label>
+                <input type="date" class="form-control" id="dateInput" name="tanggal_reservasi"
+                    min="{{ \Carbon\Carbon::today()->toDateString() }}" required>
+                <div class="invalid-feedback">Please select a date in the future.</div>
             </div>
 
+            <!-- Catatan -->
             <div class="mb-4">
                 <label for="noteInput" class="form-label">Note</label>
-                <textarea class="form-control" id="noteInput" rows="3" placeholder="Add any special requests"></textarea>
+                <textarea class="form-control" id="noteInput" name="note" rows="3" placeholder="Add any special requests"></textarea>
             </div>
 
-            <div class="text-center">
-                <button type="submit" class="btn btn-outline-light w-100">Submit</button>
-            </div>
+            <!-- Tombol Submit -->
+            @auth
+                <div class="text-center">
+                    <button type="submit" class="btn btn-outline-light w-100">Submit</button>
+                </div>
+            @else
+                <div class="text-center">
+                    <a href="{{ route('web.login') }}" class="btn btn-outline-light w-100">Login to Make a Reservation</a>
+                </div>
+            @endauth
         </form>
     </div>
 </div>
 
 <script>
-    AOS.init(); // Inisialisasi AOS untuk animasi
-
-    document.getElementById('reservationForm').addEventListener('submit', function (event) {
-        event.preventDefault();
-        let isValid = true;
-
-        const inputs = [
-            'nameInput',
-            'phoneInput',
-            'peopleInput',
-            'tableSelect',
-            'dateInput',
-            'timeInInput',
-            'timeOutInput'
-        ];
-
-        inputs.forEach(id => {
-            const input = document.getElementById(id);
-            if (!input.value) {
-                input.classList.add('is-invalid');
-                input.parentElement.classList.add('show-feedback');
-                isValid = false;
-            } else {
-                input.classList.remove('is-invalid');
-                input.parentElement.classList.remove('show-feedback');
-            }
-        });
-
-        if (isValid) {
-            alert('Reservation confirmed. Thank you!');
-            document.getElementById('reservationForm').reset();
-        }
-    });
+    AOS.init();
 </script>
 
 @endsection

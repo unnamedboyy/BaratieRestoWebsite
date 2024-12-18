@@ -176,7 +176,6 @@
             <tr>
                 <th>Username</th>
                 <th>Email</th>
-                <th>Tanggal Lahir</th>
                 <th>Nomor Telepon</th>
             </tr>
         </thead>
@@ -188,7 +187,6 @@
             <tr>
                 <td>{{ $user->nama_pelanggan }}</td>
                 <td>{{ $user->email }}</td>
-                <td>{{ $user->tanggal_lahir ?? 'N/A' }}</td>
                 <td>{{ $user->telepon }}</td>
             </tr>
             @endforeach

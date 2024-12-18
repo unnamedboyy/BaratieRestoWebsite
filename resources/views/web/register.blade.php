@@ -13,9 +13,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
         rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
         crossorigin="anonymous">
-</head>
-
-<body class="antialiased">
     <style>
         body {
             font-family: 'Playfair Display', serif;
@@ -105,8 +102,20 @@
         .notification.error {
             background-color: red;
         }
-    </style>
 
+        .form-control.is-invalid {
+            border-color: red;
+            box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+        }
+
+        .invalid-feedback {
+            color: red;
+            font-size: 0.875em;
+        }
+    </style>
+</head>
+
+<body>
     <section>
         <video class="video-background" autoplay muted loop>
             <source src="{{ asset('public/video/video.mp4') }}" type="video/mp4">
@@ -115,67 +124,47 @@
 
         <div class="card shadow-lg">
             <div class="card-body px-4 py-5">
-
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
-            @if (session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            <form action="{{ route('register') }}" method="POST" enctype="multipart/form-data">
-                @csrf
+                <form action="{{ route('register') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
                     <h4 class="mb-4 text-center">REGISTER</h4>
 
-                    <!-- Upload Gambar -->
+                    <!-- Nama Pengguna -->
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="nama_pelanggan" name="nama_pelanggan"  placeholder="Masukan Nama Anda"  />
+                        <input type="text" class="form-control @error('nama_pelanggan') is-invalid @enderror" id="nama_pelanggan" name="nama_pelanggan" placeholder="Masukan Nama Anda" value="{{ old('nama_pelanggan') }}" />
                         <label for="nama_pelanggan">Nama User</label>
                         @error('nama_pelanggan')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback">Nama pengguna ini sudah diambil.</div>
                         @enderror
                     </div>
 
+                    <!-- Email -->
                     <div class="form-floating mb-3">
-                        <input type="email" class="form-control" id="email" name="email" placeholder="Masukan Email Anda"  />
+                        <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" placeholder="Masukan Email Anda" value="{{ old('email') }}" />
                         <label for="email">Email</label>
                         @error('email')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback">Email ini sudah terdaftar.</div>
                         @enderror
                     </div>
 
+                    <!-- Password -->
                     <div class="form-floating mb-3">
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Masukan Password"  />
+                        <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" placeholder="Masukan Password" />
                         <label for="password">Password</label>
                         @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
-                    <!-- <div class="form-floating mb-3">
-                        <input type="password" class="form-control" id="password" name="password"
-                            placeholder="Konfirmasi Password"  />
-                        <label for="password">Confirm Password</label>
-                    </div> -->
-
+                    <!-- Telepon -->
                     <div class="form-floating mb-3">
-                        <input type="telepon" class="form-control" id="telepon" name="telepon" placeholder="Masukan Nomor Telepon"
-                            pattern="[0-9]{10,15}"  />
-                            <label for="telepon">Nomor Telepon</label>
-                            @error('telepon')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror                    
+                        <input type="tel" class="form-control @error('telepon') is-invalid @enderror" id="telepon" name="telepon" placeholder="Masukan Nomor Telepon" pattern="[0-9]{10,15}" value="{{ old('telepon') }}" />
+                        <label for="telepon">Nomor Telepon</label>
+                        @error('telepon')
+                            <div class="invalid-feedback">Nomor telepon ini sudah digunakan.</div>
+                        @enderror
                     </div>
 
+                    <!-- Upload Gambar -->
                     <div class="form-floating mb-3">
                         <input type="file" class="form-control @error('gambar') is-invalid @enderror" id="gambar" name="gambar">
                         <label for="gambar">Upload Gambar</label>
@@ -184,12 +173,11 @@
                         @enderror
                     </div>
 
-                    
                     <!-- Submit & Cancel Buttons -->
                     <div class="d-flex justify-content-between">
                         <button type="reset" class="btn btn-secondary" style="width: 48%;">Cancel</button>
                         <button type="submit" class="btn btn-success" style="width: 48%;">
-                            <i class="fa-solid fa-floppy-disk"></i> Simpan
+                            <i class="fa-solid fa-floppy-disk"></i> Register
                         </button>
                     </div>
                 </form>
@@ -200,36 +188,6 @@
     <div class="notification" id="notification"></div>
 
     <script>
-        function resetForm() {
-            document.getElementById("registerForm").reset();
-        }
-
-        function validateForm() {
-            const form = document.getElementById("registerForm");
-            const inputs = form.querySelectorAll("input[required]");
-            let isValid = true;
-
-            inputs.forEach(input => {
-                if (!input.value.trim()) {
-                    isValid = false;
-                }
-            });
-
-            if (isValid) {
-                saveForm();
-            } else {
-                showNotification("Harap isi semua inputan.", "error");
-            }
-        }
-
-        function saveForm() {
-            showNotification("Registrasi berhasil!", "success");
-
-            setTimeout(function () {
-                window.location.href = "{{ url('login') }}";
-            }, 2000);
-        }
-
         function showNotification(message, type) {
             const notification = document.getElementById("notification");
             notification.textContent = message;

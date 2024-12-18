@@ -32,6 +32,11 @@
         color: #eaeaea;
         margin: 0;
         padding: 0;
+        transition: all 0.3s ease;
+    }
+
+    h1, h3 {
+        color: #d4af37;
     }
 
     .btn-outline-light {
@@ -49,40 +54,63 @@
         color: black;
     }
 
-    h1, h3 {
-        color: #d4af37;
+/* Additional styling for menu cards */
+    .card-menu {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-height: 400px;  /* Minimum height to ensure uniform card size */
+    }
+
+    .card-body {
+        flex-grow: 1;  /* Allow the body to take up the remaining space */
+        padding: 20px;
+        display: flex;
+        color: white;
+        flex-direction: column;
+        justify-content: space-between;  /* Ensures button stays at the bottom */
+    }
+
+    .view-btn {
+        margin-top: auto;  /* Pushes the button to the bottom */
+        margin-bottom: 20px;  /* Adds space between button and bottom of card */
+    }
+
+    .card-body p {
+        flex-grow: 1;  /* Ensures the text takes up available space */
     }
 
     .card {
         background-color: transparent;
         border: none;
+        transition: transform 0.3s ease;
     }
 
-    .card-body {
-        color: white;
+    .card:hover {
+        transform: translateY(-10px);
     }
 
-    .container {
-        margin-top: 30px;
+    .card-img-top {
+        height: 200px;  /* Control image height */
+        object-fit: cover;
     }
+
 
     .carousel-inner img {
-        height: 600px; /* Adjust this value as needed */
-        object-fit: cover; /* This ensures the image covers the area without distortion */
+        height: 100%;
+        object-fit: cover;
+        width: 100%;
     }
 
     .carousel-caption {
-        top: 35%; /* Move caption higher */
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #fff;
+        text-align: center;
     }
 
-    .carousel-caption h1 {
-        font-size: 4rem;
-    }
-
-    .carousel-caption p {
-        font-size: 1.5rem;
-    }
-    
     .carousel-item::before {
         content: "";
         position: absolute;
@@ -98,14 +126,7 @@
         filter: brightness(60%);
     }
 
-    .carousel-caption {
-        position: absolute;
-        z-index: 2;
-        color: #fff;
-    }
-
-
-    /* Media Queries untuk Responsivitas */
+    /* Media Queries for Responsiveness */
     @media (max-width: 1200px) {
         .carousel-caption h1 {
             font-size: 3rem;
@@ -141,28 +162,40 @@
             font-size: 0.8rem;
         }
     }
+
+    /* Image Responsiveness */
+    .container img, .card img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+    }
+
+    .container {
+        margin-top: 30px;
+    }
+
+    .card-body p {
+        transition: color 0.3s ease;
+    }
 </style>
 
-<!-- Carousel -->
+<!-- Carousel Section -->
 <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel" data-aos="fade-up">
     <div class="carousel-inner">
         <div class="carousel-item active">
-            <img src="{{ asset('public/images/head(1).jpg') }}" class="d-block w-100" alt="images1">
+            <img src="{{ asset('public/images/head(1).jpg') }}" class="d-block w-100" alt="image1">
         </div>
         <div class="carousel-item">
-            <img src="{{ asset('public/images/head(2).jpg') }}" class="d-block w-100" alt="images2">
+            <img src="{{ asset('public/images/head(2).jpg') }}" class="d-block w-100" alt="image2">
         </div>
         <div class="carousel-item">
-            <img src="{{ asset('public/images/head(3).jpg') }}" class="d-block w-100" alt="images3">
+            <img src="{{ asset('public/images/head(3).jpg') }}" class="d-block w-100" alt="image3">
         </div>
     </div>
-    <div class="carousel-caption d-flex flex-column align-items-center justify-content-center" 
-         style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #fff;">
+    <div class="carousel-caption">
         <h1 data-aos="fade-down">Welcome to Baratie Resto</h1>
         <p data-aos="fade-right">Experience the finest dining with us.</p>
-        <a href="{{ url('reservation') }}" class="btn btn-outline-light mt-3" style="font-size: 1.2rem;" data-aos="fade-up">
-            Reservation
-        </a>
+        <a href="{{ url('web/reservation') }}" class="btn btn-outline-light mt-3" data-aos="fade-up">Reservation</a>
     </div>
     <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -174,81 +207,75 @@
     </button>
 </div>
 
-<!-- About -->
-<div class="container text-center" data-aos="fade-up">
+<!-- About Section -->
+<div class="container text-center mt-5" data-aos="fade-up">
     <div class="row">
         <div class="col-md-8 col-12" data-aos="zoom-in">
-            <img src="{{ asset('public/images/about.jpg') }}" class="d-block w-100" alt="about">
+            <img src="{{ asset('public/images/about.jpg') }}" class="img-fluid" alt="about">
         </div>
         <div class="col-md-4 col-12">
             <div class="card-body" data-aos="fade-left">
-                <h1>Baratie Resto</h1>
-                <p>
-                    Baratie Resto is a culinary haven where tradition meets innovation. Inspired by the vibrant flavors of both local and global cuisines, 
-                    every dish is crafted with passion to offer a truly memorable dining experience.
-                </p>
-                <p>
-                    At Baratie Resto, we believe that food is more than just sustenance—it's an art. Whether you're enjoying a quiet meal or celebrating with friends, 
-                    our warm atmosphere and carefully curated dishes will make every moment special.
-                </p>
+                <h1>About Baratie Resto</h1>
+                <p>Baratie Resto is a culinary haven where tradition meets innovation. We offer a diverse array of dishes, ranging from local delicacies to international favorites, all made with the finest ingredients.</p>
+                <p>Our warm ambiance, coupled with exceptional service, ensures that every meal is a special occasion. Join us and enjoy the perfect dining experience.</p>
             </div>
         </div>
     </div>
 </div>
 
-
-<!-- Menu -->
-<div class="container text-center" data-aos="fade-up">
+<!-- Menu Section -->
+<div class="container text-center mt-5" data-aos="fade-up">
     <h1>Our Menu</h1>
-    <div class="row row-cols-1 row-cols-sm-2">
-        <div class="col" data-aos="zoom-in">
-            <div class="card">
-                <img src="{{ asset('public/images/hmenu1.jpg') }}" class="card-img-top" alt="appetizer">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
+        <div class="col mb-4" data-aos="zoom-in">
+            <div class="card card-menu">
+                <img src="{{ asset('public/images/hmenu1.jpg') }}" class="card-img-top img-fluid" alt="appetizer">
                 <div class="card-body">
                     <h3>Appetizer</h3>
                     <p>Start your culinary journey with our delightful appetizers, crafted to awaken your senses and prepare you for an unforgettable meal.</p>
-                    <a href="{{ url('menu#appetizer') }}" class="btn btn-outline-light mt-3">View</a>
+                    <a href="{{ url('web/menu#appetizer') }}" class="btn btn-outline-light mt-3 view-btn">View</a>
                 </div>
             </div>
         </div>
 
-        <div class="col" data-aos="zoom-in" data-aos-delay="200">
-            <div class="card">
-                <img src="{{ asset('public/images/hmenu2.jpg') }}" class="card-img-top" alt="main course">
+        <div class="col mb-4" data-aos="zoom-in" data-aos-delay="200">
+            <div class="card card-menu">
+                <img src="{{ asset('public/images/hmenu2.jpg') }}" class="card-img-top img-fluid" alt="main course">
                 <div class="card-body">
                     <h3>Main Course</h3>
-                    <p>Indulge in our signature main courses, combining rich flavors and exquisite presentation, inspired by both local traditions and international cuisine.</p>
-                    <a href="{{ url('menu#maincourse') }}" class="btn btn-outline-light mt-3">View</a>
+                    <p>Indulge in our signature main courses, combining rich flavors, inspired by local traditions and international cuisine.</p>
+                    <a href="{{ url('web/menu#maincourse') }}" class="btn btn-outline-light mt-3 view-btn">View</a>
                 </div>
             </div>
         </div>
 
-        <div class="col" data-aos="zoom-in" data-aos-delay="400">
-            <div class="card">
-                <img src="{{ asset('public/images/hmenu3.jpg') }}" class="card-img-top" alt="dessert">
+        <div class="col mb-4" data-aos="zoom-in" data-aos-delay="400">
+            <div class="card card-menu">
+                <img src="{{ asset('public/images/hmenu3.jpg') }}" class="card-img-top img-fluid" alt="dessert">
                 <div class="card-body">
                     <h3>Dessert</h3>
                     <p>End your meal on a sweet note with our heavenly desserts, where every bite is a celebration of flavor and finesse.</p>
-                    <a href="{{ url('menu#dessert') }}" class="btn btn-outline-light mt-3">View</a>
+                    <a href="{{ url('web/menu#dessert') }}" class="btn btn-outline-light mt-3 view-btn">View</a>
                 </div>
             </div>
         </div>
 
-        <div class="col" data-aos="zoom-in" data-aos-delay="600">
-            <div class="card">
-                <img src="{{ asset('public/images/hmenu4.jpg') }}" class="card-img-top" alt="drinks">
+        <div class="col mb-4" data-aos="zoom-in" data-aos-delay="600">
+            <div class="card card-menu">
+                <img src="{{ asset('public/images/hmenu4.jpg') }}" class="card-img-top img-fluid" alt="drinks">
                 <div class="card-body">
                     <h3>Drinks</h3>
                     <p>Refresh yourself with our selection of premium drinks, from expertly brewed coffees to handcrafted cocktails and fine wines.</p>
-                    <a href="{{ url('menu#drinks') }}" class="btn btn-outline-light mt-3">View</a>
+                    <a href="{{ url('web/menu#drinks') }}" class="btn btn-outline-light mt-3 view-btn">View</a>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Location -->
-<div class="container text-center" data-aos="fade-up">
+
+<!-- Location Section -->
+<div class="container text-center mt-5" data-aos="fade-up">
     <div class="row">
         <div class="col-md-4 col-12" data-aos="fade-right">
             <div class="card-body">
@@ -258,16 +285,15 @@
                    <strong>Saturday - Sunday:</strong> 09:00 AM - 11:00 PM</p>
                 <p>Visit us during these times and enjoy an unforgettable dining experience!</p>
                 <div class="text-center mt-3">
-                    <a href="{{ url('reservation') }}" class="btn btn-outline-light">Make a Reservation</a>
+                    <a href="{{ url('web/reservation') }}" class="btn btn-outline-light">Reservation</a>
                 </div>
             </div>
         </div>
         <div class="col-md-8 col-12" data-aos="zoom-in">
-            <img src="{{ asset('public/images/open.jpg') }}" class="d-block w-100" alt="location">
+            <img src="{{ asset('public/images/open.jpg') }}" class="img-fluid" alt="location">
         </div>
     </div>
 </div>
-
 
 <script>
     AOS.init();

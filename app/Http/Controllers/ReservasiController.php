@@ -5,116 +5,118 @@ namespace App\Http\Controllers;
 use App\Models\Reservasi;
 use App\Models\Meja;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ReservasiController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Menampilkan semua reservasi.
      */
     public function index()
     {
-        $reservasi = Reservasi::paginate(10);  // Mengambil semua data reservasi beserta relasi meja dan user
+        // Ambil semua reservasi dengan relasi user dan meja
+        $reservasi = Reservasi::with(['user', 'meja'])->paginate(10);
         return view('admin.reservasi.index', compact('reservasi'));
     }
 
+    /**
+     * Menampilkan form reservasi.
+     */
     public function create()
     {
-        return view('admin.reservasi.create');
+        return view('web.reservation');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Menyimpan reservasi baru.
      */
     public function store(Request $request)
     {
-        
+        // Cek apakah pengguna sudah login
+        if (!Auth::check()) {
+            return redirect()->route('web.login')->with('error', 'Silakan login untuk melakukan reservasi.');
+        }
+
+        // Validasi input
         $validatedData = $request->validate([
             'jenis' => 'required|string',
-            'tanggal_reservasi' => 'required|date',
+            'tanggal_reservasi' => 'required|date|after:today',
             'note' => 'nullable|string',
-            'id_user' => 'required|exists:users,id',
         ]);
 
-        // Cek ketersediaan meja berdasarkan jenis
+        // Cek ketersediaan meja
+        // $mejaTersedia = Meja::where('jenis', $request->input('jenis'))
+        //     ->where('status', false)
+        //     ->first();
         $jenisMeja = $request->input('jenis');
         $mejaTersedia = Meja::where('jenis', $jenisMeja)
             ->where('status', false)
             ->inRandomOrder()
-            ->first(); // Ambil meja tersedia secara acak
+            ->first();
 
-            if (!$mejaTersedia) {
-                return back()->withErrors(['jenis' => 'Maaf, tidak ada meja tersedia untuk jenis yang dipilih.'])->withInput();
-            }
-        
-            // Simpan data reservasi
-            Reservasi::create([
-                'id_meja' => $mejaTersedia->id,
-                'id_user' => $request->input('id_user'),
-                'tanggal_reservasi' => $request->input('tanggal_reservasi'),
-                'note' => $request->input('note'),
-            ]);
-
-
-
-
-    // Update status meja menjadi tidak tersedia
-    $mejaTersedia->update(['status' => false]);
-
-        try {
-            $reservasi = Reservasi::latest()->paginate(10); // Mengambil semua data reservasi
-            return view('admin.reservasi.index', compact('reservasi'));
-        } catch (\Exception $e) {
-            $reservasi = Reservasi::latest()->paginate(10); // Mengambil semua data reservasi
-            return view('admin.reservasi.index', compact('reservasi'));
+        if (!$mejaTersedia) {
+            return back()->withErrors(['jenis' => 'Maaf, tidak ada meja tersedia untuk jenis yang dipilih.'])->withInput();
         }
+
+        // Simpan data reservasi
+        Reservasi::create([
+            'id_meja' => $mejaTersedia->id,
+            'id_user' => Auth::id(), // Menggunakan ID pengguna yang sedang login
+            'tanggal_reservasi' => $request->input('tanggal_reservasi'),
+            'note' => $request->input('note'),
+        ]);
+
+        // Update status meja menjadi tidak tersedia
+        $mejaTersedia->update(['status' => true]);
+
+        return redirect()->route('web.home')->with('success', 'Reservasi berhasil dibuat.');
     }
 
     /**
-     * Display the specified resource.
+     * Menampilkan detail reservasi.
      */
     public function show(Reservasi $reservasi)
     {
-        $reservasi->load(['meja', 'user']); // Memuat relasi meja dan user
-        return response()->json($reservasi); // Mengembalikan data reservasi berdasarkan ID
+        $reservasi->load(['user', 'meja']); // Memuat relasi user dan meja
+        return response()->json($reservasi);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Menampilkan form edit reservasi.
      */
+    public function edit($id)
+    {
+        $reservasi = Reservasi::with(['user', 'meja'])->findOrFail($id);
+        return view('admin.reservasi.edit', compact('reservasi'));
+    }
 
-     public function edit($id)
-     {
-         $reservasi = Reservasi::find($id);
-         return view('admin.reservasi.edit', compact('reservasi'));
-     }
-
+    /**
+     * Memperbarui data reservasi.
+     */
     public function update(Request $request, Reservasi $reservasi)
     {
         $validatedData = $request->validate([
             'tanggal_reservasi' => 'sometimes|required|date',
             'note' => 'nullable|string',
             'id_meja' => 'sometimes|required|exists:mejas,id',
-            'id_user' => 'sometimes|required|exists:users,id',
         ]);
 
-        $reservasi->update($validatedData); // Memperbarui data reservasi
-
-        try {
-            $reservasi = Reservasi::latest()->paginate(10); // Mengambil semua data reservasi
-            return view('admin.reservasi.index', compact('reservasi'));
-        } catch (\Exception $e) {
-            $reservasi = Reservasi::latest()->paginate(10); // Mengambil semua data reservasi
-            return view('admin.reservasi.index', compact('reservasi'));
-        }
+        $reservasi->update($validatedData);
+        return redirect()->route('admin.reservasi.index')->with('success', 'Reservasi berhasil diperbarui.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Menghapus reservasi.
      */
     public function destroy(Reservasi $reservasi)
     {
-        $reservasi->delete(); // Menghapus reservasi
+        // Update status meja menjadi tersedia
+        $meja = Meja::find($reservasi->id_meja);
+        if ($meja) {
+            $meja->update(['status' => false]);
+        }
 
-        return response()->json(['message' => 'Reservasi deleted successfully']);
+        $reservasi->delete();
+        return response()->json(['message' => 'Reservasi berhasil dihapus.']);
     }
 }

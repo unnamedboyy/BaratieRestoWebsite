@@ -110,6 +110,12 @@
                             </div>
                         @endif
 
+                        @if (session('error'))
+                            <div class="alert alert-danger">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+
                         @if (session('success'))
                             <div class="alert alert-success">
                                 {{ session('success') }}
@@ -153,20 +159,21 @@
         </div>
     </section>
 
-    <!-- <script>
+       <script>
         document.getElementById('loginForm').addEventListener('submit', function (e) {
             e.preventDefault(); // Prevent form from submitting normally
 
-            const username = document.getElementById('username').value;
+            const username = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
 
             // Check if username is 'admin'
-            if (username === 'admin') {
+            if (username === 'admin@gmail.com' && password === 'admin12345' ) {
                 window.location.href = "/admin"; // Redirect to admin page
             } else {
                 window.location.href = "web/home"; // Redirect to home page
             }
         });
-    </script> -->
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RzsynM9kWDMNeT87bh950GNyZPhcTNXj1W7RuBCsyN/o@jlpcV8Qyq46cDFL"

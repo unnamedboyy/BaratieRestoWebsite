@@ -33,7 +33,8 @@
     .container-profile {
         display: flex;
         justify-content: center;
-        gap: 20px; /* Jarak antar kolom */
+        gap: 20px;
+        /* Jarak antar kolom */
         margin-top: 50px;
     }
 
@@ -63,7 +64,8 @@
     }
 
     /* Flex untuk menata isi dari tiap kolom */
-    .profile-left img, .profile-right img {
+    .profile-left img,
+    .profile-right img {
         border-radius: 50%;
         width: 250px;
         height: 250px;
@@ -120,7 +122,9 @@
     }
 
     /* Atur tinggi konten agar rata */
-    .profile-left, .profile-center, .profile-right {
+    .profile-left,
+    .profile-center,
+    .profile-right {
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -142,7 +146,8 @@
         align-items: center;
     }
 
-    .history-item h5, .history-item p {
+    .history-item h5,
+    .history-item p {
         margin: 0;
     }
 
@@ -151,133 +156,84 @@
     }
 
     /* form */
-    .form-floating input{
+    .form-floating input {
         border-radius: 10px;
         background-color: whitesmoke;
         height: 20px;
     }
 
-    .form-floating label{
+    .form-floating label {
         color: black;
     }
-
 </style>
 
 <!-- Container for Profile -->
 <div class="container container-profile">
     <!-- Bagian Kiri - Profil -->
+    <!-- Bagian Kiri - Profil -->
     <div class="profile-left">
-        <img src="{{ asset('images/zendaya.jpg') }}" alt="Profile Image">
+        <img src="{{ asset($user->gambar) }}" alt="Profile Image">
         <div class="about-me">
-            <h5> Nama Lengkap:</h5>
-            <p> Zendaya Maree Stoermer Coleman</p>
+            <h5>Nama Lengkap:</h5>
+            <p>{{ $user->nama_pelanggan }}</p>
+            
+            <h5>Email:</h5>
+            <p>{{ $user->email }}</p>
 
-            <h5> Email:</h5>
-            <p> ZendayaColeman@gmail.com</p>
+            <h5>No Telepon:</h5>
+            <p>{{ $user->telepon }}</p>
 
-            <h5> Tanggal Lahir:</h5>
-            <p> September 1, 1996</p>
-
-            <h5> No Telepon:</h5>
-            <p> 081344289836</p>
-
+            <!-- Tombol Logout -->
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="btn btn-primary" style="width: 48%;">
                     Logout
                 </button>
             </form>
-
         </div>
-
     </div>
 
     <!-- Bagian Tengah - Profile Detail -->
     <div class="profile-center">
-
-        <h2><b>User Profile</b></h2>
+        <h2><b>Edit Profile</b></h2>
         <br>
 
-        <form id="registerForm">
+        @if(isset($user) && $user->id)
+            <form action="{{ route('profile.update', $user->id) }}" method="POST">
 
-            <div class="form-floating mb-4">
-                <input type="text" class="form-control" id="regUsername" placeholder="Username" required />
-                <label for="regUsername">Username</label>
-            </div>
+                @csrf
+                @method('PUT')
+                <div class="form-floating mb-4">
+                    <input type="text" class="form-control" name="nama_pelanggan" value="{{ $user->nama_pelanggan }}"
+                        required />
+                    <label for="nama_pelanggan">Nama Lengkap</label>
+                </div>
 
-            <div class="form-floating mb-4">
-                <input type="email" class="form-control" id="regEmail" placeholder="Email" required />
-                <label for="regEmail">Email</label>
-            </div>
+                <div class="form-floating mb-4">
+                    <input type="email" class="form-control" name="email" value="{{ $user->email }}" required />
+                    <label for="email">Email</label>
+                </div>
 
-            <div class="form-floating mb-4">
-                <input type="password" class="form-control" id="regPassword" placeholder="Password" required />
-                <label for="regPassword">Password</label>
-            </div>
+                <div class="form-floating mb-4">
+                    <input type="tel" class="form-control" name="telepon" value="{{ $user->telepon }}" required />
+                    <label for="telepon">Nomor Telepon</label>
+                </div>
 
-            <div class="form-floating mb-4">
-                <input type="password" class="form-control" id="regPasswordConfirm"
-                    placeholder="Confirm Password" required />
-                <label for="regPasswordConfirm">Confirm Password</label>
-            </div>
-
-            <div class="form-floating mb-4">
-                <input type="date" class="form-control" id="regBirthDate" placeholder="Tanggal Lahir" required />
-                <label for="regBirthDate">Tanggal Lahir</label>
-            </div>
-
-            <div class="form-floating mb-4">
-                <input type="tel" class="form-control" id="regPhone" placeholder="Nomor Telepon"
-                    pattern="[0-9]{10,15}" required />
-                <label for="regPhone">Nomor Telepon</label>
-            </div>
-
-            <div class="d-flex justify-content-between">
-                <button type="button" class="btn btn-cancel" style="width: 48%;" onclick="resetForm()">Cancel</button>
-                <button type="button" class="btn btn-primary" style="width: 48%;" onclick="validateForm()">Edit</button>
-            </div>
-        </form>
+                <div class="d-flex justify-content-between">
+                    <button type="reset" class="btn btn-cancel" style="width: 48%;">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="width: 48%;">Update</button>
+                </div>
+            </form>
+        @else
+            <p>User tidak ditemukan. Pastikan Anda sudah login.</p>
+        @endif     
     </div>
-
-    <!-- Bagian Kanan - Experience -->
-    <!-- <div class="profile-right">
-        <div class="about-me">
-            <h3><b>History</b></h3>
-
-            <div class="history-item">
-                <h5> 23 Juli 2023 </h5>
-                <p> <b>Total: </b> Rp. 3.000.000</p>
-            </div>
-
-            <div class="history-item">
-                <h5> 17 Agustus 2023 </h5>
-                <p> <b>Total: </b> Rp. 12.000.000</p>
-            </div>
-
-            <div class="history-item">
-                <h5> 29 November 2023 </h5>
-                <p> <b>Total: </b> Rp. 44.000.000</p>
-            </div>
-
-            <div class="history-item">
-                <h5> 09 Desember 2023 </h5>
-                <p> <b>Total: </b> Rp. 8.000.000</p>
-            </div>
-
-            <div class="history-item">
-                <h5> 25 Desember 2023 </h5>
-                <p> <b>Total: </b> Rp. 9.000.000</p>
-            </div>
-        </div>
-    </div> -->
-
 </div>
 
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-C6RzsynM9kWDMNeT87bh950GNyZPhcTNXj1W7RuBCsyN/o@jlpcV8Qyq46cDFL"
-    crossorigin="anonymous">
-</script>
+    integrity="sha384-C6RzsynM9kWDMNeT87bh950GNyZPhcTNXj1W7RuBCsyN/o@jlpcV8Qyq46cDFL" crossorigin="anonymous">
+    </script>
 
 @endsection
